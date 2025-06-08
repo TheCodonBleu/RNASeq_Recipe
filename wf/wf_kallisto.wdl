@@ -5,12 +5,12 @@ workflow wf_kallisto {
     File read1
     File read2
     String samplename
-    File? kallisto_index
+    File? index
     File? transcripts 
   }
 
 
-  if (!defined(kallisto_index)) {
+  if (!defined(index)) {
     call kallisto_index {
       input:
         transcripts = transcripts
@@ -27,13 +27,14 @@ workflow wf_kallisto {
   }
 
   output {
-    File abundance_tsv = kallisto_quant.abundance
+    File kallisto_quant_abundance = kallisto_quant.abundance
+    File kallisto_run_info = kallisto_quant.run_info
   }
 }
 
 task kallisto_index {
   input {
-    File transcripts
+    File? transcripts
   }
 
   command <<< 
@@ -46,7 +47,7 @@ task kallisto_index {
   }
 
   runtime {
-    docker: "biocontainers/kallisto:v0.46.2_cv1"
+    docker: "danhumassmed/salmon-kallisto:1.0.1"
     cpu: 4
     memory: "4G"
   }
@@ -66,17 +67,21 @@ task kallisto_quant {
       cp "$f" index/
     done
 
-    kallisto quant -i index/transcripts.idx -o kallisto_out -t 8 -b 100 -1 ~{read1} -2 ~{read2}
+    echo "Kallisto Quantification"
+
+    kallisto quant -i index/transcripts.idx -o kallisto_out -t 8 -b 100 ~{read1} ~{read2}
     
-    cp kallisto_out/abundance.tsv ~{samplename}.kallisto.abundance.tsv
+    cp kallisto_out/abundance.tsv ~{samplename}.abundance.tsv
+    cp kallisto_out/run_info.json ~{samplename}.run_info.json
   >>>
 
   output {
-    File abundance = "~{samplename}.kallisto.abundance.tsv"
+    File abundance = "~{samplename}.abundance.tsv"
+    File run_info = "~{samplename}.run_info.json"
   }
 
   runtime {
-    docker: "biocontainers/kallisto:v0.46.2_cv1"
+    docker: "danhumassmed/salmon-kallisto:1.0.1"
     cpu: 8
     memory: "8G"
   }
