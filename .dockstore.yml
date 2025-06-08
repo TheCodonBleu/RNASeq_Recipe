@@ -2,4 +2,4 @@ version: 1.2
 workflows:
  - name: RNASeq_Recipe
    subclass: WDL
-   primaryDescriptorPath: /wf_rnaseq.wdl
+   primaryDescriptorPath: /wf_rnaseq_pe.wdl
