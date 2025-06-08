@@ -1,6 +1,11 @@
 version 1.0
 
 workflow RNASeq_Visualization {
+    meta {
+      description: "Create a heatmap from you RNASeq quantification file."
+      author: "David Maimoun (The Codon Bleu)"
+  }
+
   input {
     Array[File] quant_files
     Int top_n = 50
