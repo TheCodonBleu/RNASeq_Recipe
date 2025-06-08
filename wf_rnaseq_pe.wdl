@@ -7,20 +7,22 @@ import "tasks/feature_counts.wdl" as FC
 import "tasks/utils/decompress.wdl" as Decompress
 import "wf/wf_salmon.wdl" as WF_Salmon
 import "wf/wf_star_align.wdl" as WF_Star_Align
+import "wf/wf_kallisto.wdl" as WF_Kallisto
 
 workflow RNASeq {
-    meta {
-      description: "Perform RNASeq analysis."
-      author: "David Maimoun (The Codon Bleu)"
+
+  meta {
+    description: "Perform RNASeq analysis."
+    author: "David Maimoun (The Codon Bleu)"
   }
 
   input {
     String samplename
-    String species
     File read1
     File read2
-    String aligner = 'star'
+    String aligner = 'salmon'
     
+    String? species
     File? transcripts
     File? index  
     File? ref_genome_fasta
@@ -57,7 +59,7 @@ workflow RNASeq {
   }
 
   if (aligner == 'kallisto') {
-    call WF_Salmon.wf_salmon as wf_salmon {
+    call WF_Kallisto.wf_kallisto as wf_kallisto {
       input:
         read1 = trimming.read1_trimmed,
         read2 = trimming.read2_trimmed, 
@@ -102,6 +104,9 @@ workflow RNASeq {
     File? salmon_lib_format_counts = wf_salmon.salmon_lib_format_counts
     File? salmon_cmd_info = wf_salmon.salmon_cmd_info
     File? salmon_quant_log = wf_salmon.salmon_quant_log
+
+    File? kallisto_quant = wf_kallisto.kallisto_quant_abundance
+    File? kallisto_run_info = wf_kallisto.kallisto_run_info
 
     # File qc_html = fastqc.html_report
     # File multiqc = multiqc.report
