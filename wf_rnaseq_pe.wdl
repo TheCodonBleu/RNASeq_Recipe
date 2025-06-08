@@ -9,6 +9,10 @@ import "wf/wf_salmon.wdl" as WF_Salmon
 import "wf/wf_star_align.wdl" as WF_Star_Align
 
 workflow RNASeq {
+    meta {
+      description: "Perform RNASeq analysis."
+      author: "David Maimoun (The Codon Bleu)"
+  }
 
   input {
     String samplename
