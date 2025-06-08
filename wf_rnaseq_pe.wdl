@@ -5,8 +5,8 @@ import "tasks/qc/reads_qc.wdl" as QC
 import "tasks/qc/trimming.wdl" as Trimming
 import "tasks/feature_counts.wdl" as FC
 import "tasks/utils/decompress.wdl" as Decompress
-import "wf/salmon.wdl" as WF_Salmon
-import "wf/star_align.wdl" as WF_Star_Align
+import "wf/wf_salmon.wdl" as WF_Salmon
+import "wf/wf_star_align.wdl" as WF_Star_Align
 
 workflow RNASeq {
 
@@ -42,6 +42,17 @@ workflow RNASeq {
   
 
   if (aligner == 'salmon') {
+    call WF_Salmon.wf_salmon as wf_salmon {
+      input:
+        read1 = trimming.read1_trimmed,
+        read2 = trimming.read2_trimmed, 
+        index = index,
+        transcripts = transcripts,
+        samplename = samplename
+    }
+  }
+
+  if (aligner == 'kallisto') {
     call WF_Salmon.wf_salmon as wf_salmon {
       input:
         read1 = trimming.read1_trimmed,
