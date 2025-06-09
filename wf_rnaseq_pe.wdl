@@ -9,7 +9,7 @@ import "wf/wf_salmon.wdl" as WF_Salmon
 import "wf/wf_star_align.wdl" as WF_Star_Align
 import "wf/wf_kallisto.wdl" as WF_Kallisto
 
-workflow RNASeq {
+workflow RNASeq_pe {
 
   meta {
     description: "Perform RNASeq analysis."
